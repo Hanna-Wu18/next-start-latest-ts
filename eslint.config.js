@@ -7,7 +7,6 @@ import { fileURLToPath } from 'node:url'
 import js from '@eslint/js'
 import { FlatCompat } from '@eslint/eslintrc'
 import prettier from 'eslint-plugin-prettier'
-import pluginJest from 'eslint-plugin-jest'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -40,24 +39,10 @@ export default [
       'next',
       'next/typescript',
       'next/core-web-vitals',
-      'plugin:react-hooks/recommended'
+      'plugin:react-hooks/recommended',
+      'plugin:@next/next/recommended'
     )
   ),
-  {
-    // update this to match your test files
-    files: ['**/*.spec.js', '**/*.test.js'],
-    plugins: { jest: pluginJest },
-    languageOptions: {
-      globals: pluginJest.environments.globals.globals,
-    },
-    rules: {
-      'jest/no-disabled-tests': 'warn',
-      'jest/no-focused-tests': 'error',
-      'jest/no-identical-title': 'error',
-      'jest/prefer-to-have-length': 'warn',
-      'jest/valid-expect': 'error',
-    },
-  },
   {
     plugins: {
       'jsx-a11y': fixupPluginRules(jsxA11Y),
@@ -82,7 +67,6 @@ export default [
         createDefaultProgram: false,
       },
     },
-
     settings: {
       react: {
         version: 'detect',
@@ -104,7 +88,6 @@ export default [
         },
       },
     },
-
     rules: {
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
