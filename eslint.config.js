@@ -1,12 +1,13 @@
+import { FlatCompat } from '@eslint/eslintrc'
 import { fixupConfigRules, fixupPluginRules } from '@eslint/compat'
+import js from '@eslint/js'
 import jsxA11Y from 'eslint-plugin-jsx-a11y'
+import prettier from 'eslint-plugin-prettier'
 import react from 'eslint-plugin-react'
 import globals from 'globals'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import js from '@eslint/js'
-import { FlatCompat } from '@eslint/eslintrc'
-import prettier from 'eslint-plugin-prettier'
+import ts from 'typescript-eslint'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -40,7 +41,7 @@ export default [
       'next/typescript',
       'next/core-web-vitals',
       'plugin:react-hooks/recommended',
-      'plugin:@next/next/recommended'
+      'plugin:@typescript-eslint/recommended'
     )
   ),
   {
@@ -48,6 +49,7 @@ export default [
       'jsx-a11y': fixupPluginRules(jsxA11Y),
       react: fixupPluginRules(react),
       prettier: fixupPluginRules(prettier),
+      'typescript-eslint': fixupPluginRules(ts),
     },
 
     languageOptions: {
@@ -55,15 +57,12 @@ export default [
         ...globals.browser,
         ...globals.node,
       },
-
       ecmaVersion: 'latest',
       sourceType: 'module',
-
       parserOptions: {
         ecmaFeatures: {
           jsx: true,
         },
-
         createDefaultProgram: false,
       },
     },
@@ -89,9 +88,12 @@ export default [
       },
     },
     rules: {
+      // unused vars rules replaced with typescript-eslint rules
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': 'error',
+      '@typescript-eslint/no-empty-interface': 'error',
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
-      'no-unused-vars': 'warn',
       'jsx-a11y/anchor-is-valid': 'off',
       'jsx-a11y/label-has-associated-control': 'off',
       'jsx-a11y/label-has-for': 'off',
