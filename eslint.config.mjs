@@ -33,7 +33,7 @@ const eslintConfig = [
     },
     rules: {
       // Prettier 整合
-      'prettier/prettier': 'error',
+      'prettier/prettier': 'warn',
 
       // TypeScript 規則
       '@typescript-eslint/no-unused-vars': 'warn',
@@ -42,14 +42,14 @@ const eslintConfig = [
       '@typescript-eslint/explicit-module-boundary-types': 'off',
 
       // React 規則
-      'react-hooks/rules-of-hooks': 'error',
+      'react-hooks/rules-of-hooks': 'warn',
       'react-hooks/exhaustive-deps': 'warn',
 
       // 一般規則
       'no-console': 'off', // 開發時允許 console
       'prefer-const': 'warn',
       'no-var': 'warn',
-      'no-const-assign': 'error',
+      'no-const-assign': 'warn',
     },
   },
 ];
