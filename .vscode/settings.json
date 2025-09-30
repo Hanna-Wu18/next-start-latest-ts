@@ -2,8 +2,9 @@
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit",
-    "source.organizeImports": "explicit"
+    // 取消存檔時的 eslint 修正和 organize imports 功能
+    // "source.fixAll.eslint": "explicit",
+    // "source.organizeImports": "explicit"
   },
   "eslint.enable": true,
   "eslint.validate": [
