@@ -19,8 +19,11 @@
   "typescript.updateImportsOnFileMove.enabled": "always",
   "tslint.enable": false,
   "emmet.includeLanguages": {
-    "typescript": "html",
-    "typescriptreact": "html"
+    "typescript": "javascript",
+    "typescriptreact": "javascriptreact"
+  },
+  "emmet.syntaxProfiles": {
+    "typescriptreact": "jsx"
   },
   "workbench.colorCustomizations": {
     "activityBar.background": "#61DAFB",
