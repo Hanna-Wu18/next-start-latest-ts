@@ -1,127 +1,248 @@
+
 'use client';
-
 import React, { useState } from 'react';
-import SidebarActions from '../_components/SidebarActions';
-import LocationDropdown from '@/app/components/Location';
-import { Location } from '@/app/components/Location/types';
 
-export default function GuidePage() {
-  // ✅ Hook harus berada di dalam komponen (di sini)
-  const [location, setLocation] = useState<Location | undefined>();
-  const [articleData, setArticleData] = useState({
-    author_name: '',
-    title: '',
-    content: '',
-    main_image: null as File | null,
-    other_images: [] as File[],
-  });
+export default function ArticleForm() {
+  const [title, setTitle] = useState('');
+  const [location, setLocation] = useState('');
+  const [content, setContent] = useState('');
+  const [file, setFile] = useState<File | null>(null);
 
-  // ✅ Handler input teks
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setArticleData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  // ✅ Handler upload gambar
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const files = Array.from(e.target.files);
-      setArticleData((prevData) => ({
-        ...prevData,
-        main_image: files.length > 0 ? files[0] : null,
-        other_images: files.slice(1),
-      }));
-    }
-  };
-
-  // ✅ Handler submit
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('待發送資料 Data to be sent:', { ...articleData, location });
-    alert('表單成功送出 Form submitted successfully (cek console log).');
+
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('location', location);
+    formData.append('content', content);
+    if (file) formData.append('image', file);
+
+    const res = await fetch('http://localhost:4000/api/articles', {
+      method: 'POST',
+      body: formData,
+    });
+
+    const data = await res.json();
+    console.log('✅ Article saved:', data);
+    alert('Artikel berhasil dikirim!');
   };
 
-  // ✅ UI Layout
   return (
-    <div className="flex justify-center gap-8 my-10">
-      {/* Sidebar di kiri */}
-      <SidebarActions />
-
-      {/* Form di kanan */}
-      <form
-        onSubmit={handleSubmit}
-        className="space-y-4 p-6 bg-white shadow-lg rounded-lg max-w-2xl w-full"
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-4">
+      <input
+        type="text"
+        name="title"
+        value={title}
+        placeholder="文章標題"
+        onChange={(e) => setTitle(e.target.value)}
+        className="border p-2"
+      />
+      <select
+        name="location"
+        value={location}
+        onChange={(e) => setLocation(e.target.value)}
+        className="border p-2"
       >
-        <h2 className="text-2xl font-bold text-gray-800 border-b pb-2 mb-4">
-          🇹🇼 旅遊文章發佈表單
-        </h2>
+        <option value="">選擇地點</option>
+        <option value="台北">台北</option>
+        <option value= "桃園">桃園</option>
+        <option value= "新竹">新竹</option>
+        <option value= "苗栗">苗栗</option>
+        <option value="台中">台中</option>
+        <option value= "彰化">彰化</option>
+        <option value="雲林">雲林</option>
+        <option value="嘉義">嘉義</option>
+        <option value="台南">台南</option>
+        <option value="高雄">高雄</option>
+        <option value="屏東">屏東</option>
+        <option value="金門">金門</option>
+        <option value="澎湖">澎湖</option>
+      </select>
+      <textarea
+        name="content"
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+        placeholder="寫下你的旅遊筆記..."
+        className="border p-2 h-32"
+      />
+      {/* <input
+        type="file"
+        name="image"
+        onChange={(e) => setFile(e.target.files?.[0] || null)} */}
+          {/* 圖片上傳 */}
 
-        {/* 發文者名稱 */}
         <input
-          type="text"
-          name="author_name"
-          value={articleData.author_name}
-          onChange={handleChange}
-          placeholder="author_name - 發文者"
-          className="border p-2 w-full rounded focus:ring-amber-500 focus:border-amber-500"
-          required
-        />
-
-        {/* 旅遊標題 */}
-        <input
-          type="text"
-          name="title"
-          value={articleData.title}
-          onChange={handleChange}
-          placeholder="Travel title - 旅遊標題"
-          className="border p-2 w-full rounded focus:ring-amber-500 focus:border-amber-500"
-          required
-        />
-
-        {/* 地區選擇下拉選單 */}
-        <LocationDropdown selected={location} onChange={setLocation} />
-
-        {/* 旅遊內容 */}
-        <textarea
-          name="content"
-          value={articleData.content}
-          onChange={handleChange}
-          placeholder="content - 旅遊分享內容"
-          className="border p-2 w-full h-48 rounded focus:ring-amber-500 focus:border-amber-500"
-          required
-        />
-
-        {/* 圖片上傳 */}
-        <label className="block text-sm font-medium text-gray-700 pt-4">
-          Upload Foto (最多上傳5張 - 主圖 + 4張副圖)
+    type="file" // Asumsi ada type="file" di baris sebelumnya
+    name="image"
+    onChange={(e) => setFile(e.target.files?.[0] || null)}
+/> {/* 圖片上傳 - Pindahkan komentar ke luar tag input */}
+<label className="block text-sm font-medium text-gray-700 pt-4">
+    Upload Foto (最多上傳5張 - 主圖 + 4張副圖)
+</label>
+        {/* <label className="block text-sm font-medium text-gray-700 pt-4">
+           Upload Foto (最多上傳5張 - 主圖 + 4張副圖)
         </label>
         <input
-          type="file"
-          multiple
-          accept="image/*"
-          onChange={handleImageChange}
-          className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100"
-        />
-        <p className="text-xs text-gray-500">
-          已選取檔案數量: {articleData.main_image ? 1 + articleData.other_images.length : articleData.other_images.length} 個
-        </p>
+        type="file"
+        multiple
+                  accept="image/*"
+        onChange={handleImageChange}
+           className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100"
+         /> */}
 
-        {/* 送出按鈕 */}
-        <button
-          type="submit"
-          className="bg-amber-600 hover:bg-amber-700 text-white font-bold px-6 py-2 rounded-lg transition duration-150 ease-in-out w-full"
-        >
-          Send Article 送出文章
-        </button>
-      </form>
-    </div>
+      {/* /> */}
+      <button
+        type="submit"
+        className="bg-orange-500 text-white py-2 px-4 rounded hover:bg-orange-600"
+      >
+        Send Article 送出文章
+      </button>
+    </form>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// 'use client';
+
+// import React, { useState } from 'react';
+// import SidebarActions from '../_components/SidebarActions';
+// import LocationDropdown from '@/app/components/Location';
+// import { Location } from '@/app/components/Location/types';
+
+// export default function GuidePage() {
+//   // ✅ Hook harus berada di dalam komponen (di sini)
+//   const [location, setLocation] = useState<Location | undefined>();
+//   const [articleData, setArticleData] = useState({
+//     author_name: '',
+//     title: '',
+//     content: '',
+//     main_image: null as File | null,
+//     other_images: [] as File[],
+//   });
+
+//   // ✅ Handler input teks
+//   const handleChange = (
+//     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+//   ) => {
+//     const { name, value } = e.target;
+//     setArticleData((prevData) => ({
+//       ...prevData,
+//       [name]: value,
+//     }));
+//   };
+
+//   // ✅ Handler upload gambar
+//   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+//     if (e.target.files) {
+//       const files = Array.from(e.target.files);
+//       setArticleData((prevData) => ({
+//         ...prevData,
+//         main_image: files.length > 0 ? files[0] : null,
+//         other_images: files.slice(1),
+//       }));
+//     }
+//   };
+
+//   // ✅ Handler submit
+//   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+//     e.preventDefault();
+//     console.log('待發送資料 Data to be sent:', { ...articleData, location });
+//     alert('表單成功送出 Form submitted successfully (cek console log).');
+//   };
+
+//   // ✅ UI Layout
+//   return (
+//     <div className="flex justify-center gap-8 my-10">
+//       {/* Sidebar di kiri */}
+//       <SidebarActions />
+
+//       {/* Form di kanan */}
+//       <form
+//         onSubmit={handleSubmit}
+//         className="space-y-4 p-6 bg-white shadow-lg rounded-lg max-w-2xl w-full"
+//       >
+//         <h2 className="text-2xl font-bold text-gray-800 border-b pb-2 mb-4">
+//           🇹🇼 旅遊文章發佈表單
+//         </h2>
+
+//         {/* 發文者名稱 */}
+//         <input
+//           type="text"
+//           name="author_name"
+//           value={articleData.author_name}
+//           onChange={handleChange}
+//           placeholder="author_name - 發文者"
+//           className="border p-2 w-full rounded focus:ring-amber-500 focus:border-amber-500"
+//           required
+//         />
+
+//         {/* 旅遊標題 */}
+//         <input
+//           type="text"
+//           name="title"
+//           value={articleData.title}
+//           onChange={handleChange}
+//           placeholder="Travel title - 旅遊標題"
+//           className="border p-2 w-full rounded focus:ring-amber-500 focus:border-amber-500"
+//           required
+//         />
+
+//         {/* 地區選擇下拉選單 */}
+//         <LocationDropdown selected={location} onChange={setLocation} />
+
+//         {/* 旅遊內容 */}
+//         <textarea
+//           name="content"
+//           value={articleData.content}
+//           onChange={handleChange}
+//           placeholder="content - 旅遊分享內容"
+//           className="border p-2 w-full h-48 rounded focus:ring-amber-500 focus:border-amber-500"
+//           required
+//         />
+
+//         {/* 圖片上傳 */}
+//         <label className="block text-sm font-medium text-gray-700 pt-4">
+//           Upload Foto (最多上傳5張 - 主圖 + 4張副圖)
+//         </label>
+//         <input
+//           type="file"
+//           multiple
+//           accept="image/*"
+//           onChange={handleImageChange}
+//           className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100"
+//         />
+//         <p className="text-xs text-gray-500">
+//           已選取檔案數量: {articleData.main_image ? 1 + articleData.other_images.length : articleData.other_images.length} 個
+//         </p>
+
+//         {/* 送出按鈕 */}
+//         <button
+//           type="submit"
+//           className="bg-amber-600 hover:bg-amber-700 text-white font-bold px-6 py-2 rounded-lg transition duration-150 ease-in-out w-full"
+//         >
+//           Send Article 送出文章
+//         </button>
+//       </form>
+//     </div>
+//   );
+// }
 
 
 
