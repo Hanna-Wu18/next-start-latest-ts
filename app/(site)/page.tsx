@@ -11,7 +11,7 @@ export default function HomePage() {
   const [destinations, setDestinations] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:3007/api/destinations')
+    fetch('http://localhost:4000/api/destinations')
       .then((res) => res.json())
       .then((data) => setDestinations(data))
       .catch((err) => console.error(err));
